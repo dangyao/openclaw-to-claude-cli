@@ -119,14 +119,12 @@ jq -n \
 
 log "Wrote latest.json"
 
+# ---- Webhook 认证 token（独立于 Gateway API token）----
+OPENCLAW_HOOK_TOKEN="${OPENCLAW_HOOK_TOKEN:-}"
+OPENCLAW_GATEWAY="${OPENCLAW_GATEWAY:-}"
+
 # ---- 方式1: HTTP 回调（自动适配 OpenClaw webhook 端点格式）----
 if [ -n "$CALLBACK_URL" ]; then
-    # 构建认证 header（如果有 token）
-    AUTH_HEADER=""
-    if [ -n "${OPENCLAW_GATEWAY_TOKEN:-}" ]; then
-        AUTH_HEADER="-H \"Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}\""
-    fi
-
     # 根据 URL 路径自动选择 payload 格式
     SUMMARY=$(echo "$OUTPUT" | tail -c 2000 | tr '\n' ' ')
     case "$CALLBACK_URL" in
@@ -155,26 +153,28 @@ if [ -n "$CALLBACK_URL" ]; then
             ;;
     esac
 
+    CURL_AUTH=()
+    if [ -n "$OPENCLAW_HOOK_TOKEN" ]; then
+        CURL_AUTH=(-H "Authorization: Bearer ${OPENCLAW_HOOK_TOKEN}")
+    fi
+
     HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
         -X POST "$CALLBACK_URL" \
         -H "Content-Type: application/json" \
-        ${AUTH_HEADER:+-H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}"} \
+        "${CURL_AUTH[@]}" \
         -d "$PAYLOAD" \
         --connect-timeout 5 --max-time 10 2>/dev/null || echo "000")
     log "HTTP callback to $CALLBACK_URL => status $HTTP_STATUS"
 fi
 
 # ---- 方式2: OpenClaw Gateway 唤醒（通过环境变量自动触发，独立于 callback-url）----
-OPENCLAW_GATEWAY="${OPENCLAW_GATEWAY:-}"
-OPENCLAW_GATEWAY_TOKEN="${OPENCLAW_GATEWAY_TOKEN:-}"
-
-if [ -n "$OPENCLAW_GATEWAY" ] && [ -n "$OPENCLAW_GATEWAY_TOKEN" ]; then
+if [ -n "$OPENCLAW_GATEWAY" ] && [ -n "$OPENCLAW_HOOK_TOKEN" ]; then
     # 如果 callback-url 已经指向了同一个 gateway 的 /hooks/wake，跳过避免重复
     if [[ "$CALLBACK_URL" == "${OPENCLAW_GATEWAY}/hooks/wake" ]]; then
         log "Skipping gateway wake (already handled by callback-url)"
     else
         curl -s -X POST "${OPENCLAW_GATEWAY}/hooks/wake" \
-            -H "Authorization: Bearer ${OPENCLAW_GATEWAY_TOKEN}" \
+            -H "Authorization: Bearer ${OPENCLAW_HOOK_TOKEN}" \
             -H "Content-Type: application/json" \
             -d "{\"text\": \"Task ${TASK_NAME} completed\", \"mode\": \"now\"}" \
             --connect-timeout 5 --max-time 10 >/dev/null 2>&1 \

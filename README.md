@@ -145,7 +145,7 @@ Add to `~/.claude/settings.json`:
 export OPENCLAW_GATEWAY="http://127.0.0.1:18789"
 
 # Webhook auth token (matches hooks.token in openclaw.json)
-export OPENCLAW_GATEWAY_TOKEN="your-webhook-secret"
+export OPENCLAW_HOOK_TOKEN="your-webhook-secret"
 
 # Claude Code binary path
 export CLAUDE_CODE_BIN="/Users/xxxx/.nvm/versions/node/v22.22.0/bin/claude"
@@ -154,7 +154,7 @@ export CLAUDE_CODE_BIN="/Users/xxxx/.nvm/versions/node/v22.22.0/bin/claude"
 export OPENCLAW_BIN="openclaw"
 ```
 
-**Note**: `OPENCLAW_GATEWAY_TOKEN` corresponds to `hooks.token`, not `gateway.auth.token`. If both are set to the same value, no distinction is needed.
+**Note**: `OPENCLAW_HOOK_TOKEN` corresponds to `hooks.token`, not `gateway.auth.token`. If both are set to the same value, no distinction is needed.
 
 ---
 
@@ -229,7 +229,7 @@ Opens a new iTerm2 tab so you can watch Claude Code's output in real time.
 
 ```bash
 export OPENCLAW_GATEWAY="http://127.0.0.1:18789"
-export OPENCLAW_GATEWAY_TOKEN="your-webhook-secret"
+export OPENCLAW_HOOK_TOKEN="your-webhook-secret"
 
 ./dispatch-claude.sh \
   -p "Fix lint errors" \
@@ -255,7 +255,7 @@ Enables Agent Teams; Claude Code automatically splits into multiple sub-agents w
 
 ```bash
 export OPENCLAW_GATEWAY="http://127.0.0.1:18789"
-export OPENCLAW_GATEWAY_TOKEN="your-webhook-secret"
+export OPENCLAW_HOOK_TOKEN="your-webhook-secret"
 
 ./dispatch-claude.sh \
   -p "Refactor API" \
@@ -337,7 +337,7 @@ Request-specified `sessionKey` is **disabled by default**. To enable:
 | `*/hooks/agent` | `{"message": "...", "name": "...", "agentId": "claude", ...}` | Trigger independent agent |
 | Other URLs | Full `latest.json` content | Generic HTTP callback |
 
-All requests automatically include `Authorization: Bearer` header (if `OPENCLAW_GATEWAY_TOKEN` is set).
+All requests automatically include `Authorization: Bearer` header (if `OPENCLAW_HOOK_TOKEN` is set).
 
 ### Two independent Gateway notification paths
 
@@ -448,7 +448,7 @@ All runtime data is stored in:
 - [ ] `~/.openclaw/openclaw.json`: `hooks.enabled: true` + `hooks.token` set
 - [ ] Gateway restarted for webhook config to take effect
 - [ ] `~/.claude/settings.json`: Stop/SessionEnd hooks registered
-- [ ] Environment variables `OPENCLAW_GATEWAY` + `OPENCLAW_GATEWAY_TOKEN` set
+- [ ] Environment variables `OPENCLAW_GATEWAY` + `OPENCLAW_HOOK_TOKEN` set
 - [ ] Verify webhook reachable: `curl -X POST http://127.0.0.1:18789/hooks/wake -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"text":"test","mode":"now"}'`
 
 ---
@@ -456,7 +456,7 @@ All runtime data is stored in:
 ## Troubleshooting
 
 **Gateway returns 401:**
-- Check `OPENCLAW_GATEWAY_TOKEN` matches `hooks.token` in `openclaw.json`
+- Check `OPENCLAW_HOOK_TOKEN` matches `hooks.token` in `openclaw.json`
 - Confirm using `Authorization: Bearer` header, not query string
 
 **Gateway returns 404:**
