@@ -1,6 +1,8 @@
 # openclaw-to-claude-cli
 
-CLI + Hook：面向 OpenClaw 等 AGI 平台的 Claude Code 任务派发与异步回调方案。
+将你的编码任务通过 OpenClaw 等 AGI 平台派发给 Claude Code 
+
+任务派发与异步回调方案:CLI + Hook
 
 [English](./README.md)
 
