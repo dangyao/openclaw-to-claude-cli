@@ -1,6 +1,8 @@
 # openclaw-to-claude-cli
 
-CLI + Hook: Dispatch Claude Code tasks from OpenClaw/AGI platforms with async callbacks.
+Dispatch coding tasks to Claude Code via OpenClaw.
+
+Dispatch Task/Async Callbacks: CLI + Hook
 
 [中文文档](./README_CN.md)
 
