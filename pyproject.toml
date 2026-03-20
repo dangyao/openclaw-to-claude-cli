@@ -1,0 +1,10 @@
+[project]
+name = "openclaw-to-claude-cli"
+version = "0.1.0"
+description = "CLI + Hook for dispatching Claude Code tasks from OpenClaw/AGI platforms"
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
